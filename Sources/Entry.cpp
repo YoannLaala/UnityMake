@@ -4,7 +4,7 @@
 #include <Core/Stream/FileWriter.hpp>
 #include <iostream>
 
-#define VERSION				"1.0.0"
+#define VERSION				"1.0.1"
 #define ARGUMENT_INPUT		"--input"
 #define ARGUMENT_OUTPUT		"--output"
 #define UNITY_MAKE_MAX_FILE	100
@@ -29,6 +29,8 @@ int main(int argc, const char** argv)
 	// Retrieve argument
 	String sInput = kParser.Get<String>(ARGUMENT_INPUT);
 	String sOutput = kParser.Get<String>(ARGUMENT_OUTPUT);
+	Path::Format(sInput);
+	Path::Format(sOutput);
 
 	// Check input directory
 	if(!FileManager::IsDirectoryExist(sInput.GetBuffer()))
@@ -64,11 +66,13 @@ int main(int argc, const char** argv)
 				sUnityFile.Set(sUnityPath).Append("unity_").Append(++uiUnityIndex).Append(".cpp");
 				kFileWriter.Open(sUnityFile.GetBuffer());
 			}
-			
+
 			// Write the file in the unity file
+			static String sInclude("#include \"");
 			String& sFile = vFile[uiFile];
+			kFileWriter.Write(sInclude.GetBuffer(), sInclude.GetLength());
 			kFileWriter.Write(sFile.GetBuffer(), sFile.GetLength());
-			kFileWriter.Write('\n');
+			kFileWriter.Write("\"\n", 2);
 		}
 	}
 
